@@ -1,5 +1,18 @@
 [
   {
+    "id": "18-12-2025-booksellers",
+    "date": "December 18, 2025",
+    "date_parsed": "2025-12-18",
+    "public": 1,
+    "type": "booksellers",
+    "description": "Following inspections of Chitay-Gorod bookstores in Nalchik, Chita, and Ulyanovsk, police have demanded that <em>The Left Hand of Darkness</em>, a science fiction novel by Ursula K. Le Guin, be removed from the shelves. Although the authorities have not officially explained the reason behind the inspections, they are believed to be linked to the novel’s depiction of characters who can change their biological gender.",
+    "location": "",
+    "source": "url",
+    "url1": "https://www.vedomosti.ru/media/news/2025/12/18/1164558-azbuka-i-chitai-gorod-podtverdili",
+    "url2": "",
+    "url3": ""
+  },
+  {
     "id": "10-02-2025-publishers",
     "date": "October 2, 2025",
     "date_parsed": "2025-10-02",

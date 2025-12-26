@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="logo.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reading Orwell in Moscow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+<body>
+  <h1>Reading Orwell in Moscow</h1>
+  <h2>Chronicle of Book Censorship in Contemporary Russia</h2>
+  <div id="menu-buttons">
+    <a href="index.html"><button>timeline</button></a>
+    <a href="statistics.html"> <button class="active">statistics</button></a>
+    <a href="about.html"><button>about</button></a>
+  </div>
+
+<div id="content">
+
+<style>
+  #censorship-plot {
+    width: 55vw;    
+    margin: 0 auto;  
+  }
+  #censorship-plot text {
+    fill: white;
+    font-size: 135%;
+  }
+
+  #censorship-plot .grid line {
+    stroke: white;       
+    stroke-opacity: 0.3; 
+    stroke-dasharray: 4 4;
+    shape-rendering: crispEdges;
+  }
+
+  svg {
+    width: 100%;     /* let SVG scale with container */
+    height: auto;    /* dynamic height */
+  }
+</style>
+
+<div id="censorship-plot"></div>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<script>
+d3.json("entries.json").then(function(data) {
+
+    data.forEach(d => {
+        d.date_parsed = new Date(d.date_parsed);
+        d.year = d.date_parsed.getFullYear();
+    });
+
+    const counts = d3.rollups(
+        data,
+        v => v.length,
+        d => d.year
+    ).map(([year, n]) => ({year: +year, n}));
+
+    const minYear = d3.min(counts, d => d.year);
+    const maxYear = d3.max(counts, d => d.year);
+    const allYears = d3.range(minYear, maxYear + 1);
+
+    const countsFull = allYears.map(y => {
+        const row = counts.find(d => d.year === y);
+        return {year: y, n: row ? row.n : 0};
+    });
+
+    // Use container width (65% of screen)
+    const containerWidth = document.getElementById("censorship-plot").clientWidth;
+    const width = containerWidth;
+    const height = 450;
+
+    const margin = {top: 100, right: 30, bottom: 90, left: 60};
+
+    const svg = d3.select("#censorship-plot")
+      .append("svg")
+      .attr("viewBox", `0 0 ${width} ${height}`)   // responsive
+      .attr("preserveAspectRatio", "xMidYMid meet");
+
+    const x = d3.scaleBand()
+        .domain(countsFull.map(d => d.year))
+        .range([margin.left, width - margin.right])
+        .padding(0.2);
+
+    const y = d3.scaleLinear()
+        .domain([0, d3.max(countsFull, d => d.n)]).nice()
+        .range([height - margin.bottom, margin.top]);
+
+    svg.append("g")
+      .attr("class", "grid")
+      .attr("transform", `translate(${margin.left},0)`)
+      .call(d3.axisLeft(y)
+          .ticks(5)
+          .tickSize(-(width - margin.left - margin.right)) 
+        . tickFormat("")                                 
+    );
+
+    svg.selectAll("rect")
+        .data(countsFull)
+        .enter().append("rect")
+        .attr("x", d => x(d.year))
+        .attr("y", d => y(d.n))
+        .attr("width", x.bandwidth())
+        .attr("height", d => y(0) - y(d.n))
+        .attr("fill", "#D1462F");
+
+    svg.selectAll(".bar-label")
+        .data(countsFull.filter(d => d.n > 0))
+        .enter()
+        .append("text")
+        .attr("class", "bar-label")
+        .attr("x", d => x(d.year) + x.bandwidth() / 2) 
+        .attr("y", d => y(d.n) - 5)                    
+        .attr("text-anchor", "middle")
+        .style("fill", "#757373")                      
+        .style("font-size", "12px")
+        .text(d => d.n);
+
+    svg.append("g")
+        .attr("transform", `translate(0, ${height - margin.bottom})`)
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .style("text-anchor", "middle")   
+        .attr("x", 0)
+        .attr("y", 10);                   
+
+    svg.append("g")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y).ticks(5));
+
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", margin.top / 2)
+        .attr("text-anchor", "middle")
+        .style("font-size", "22px")
+        .text("Book Censorship in Russia");
+
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", margin.top / 2 + 22)
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("fill", "#555")
+        .text("Grouped by Year");
+
+});
+</script>
+</div>
+
+<footer class="page-footer">© 2025</footer>
+</body>
+</html>
+

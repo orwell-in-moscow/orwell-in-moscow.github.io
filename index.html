@@ -16,109 +16,88 @@
 <body>
   <h1>Reading Orwell in Moscow</h1>
   <h2>Chronicle of Book Censorship in Contemporary Russia</h2>
-  <div id="category-buttons"></div>
+  <div id="menu-buttons">
+    <a href="index.html"><button class="active">timeline</button></a>
+    <a href="statistics.html"><button>statistics</button></a>
+    <a href="about.html"><button>about</button></a>
+  </div>
+  <div id="category-buttons" style="display:none;"></div>
+
   <div id="content">
   <div id="entries"></div>
-  <div id="about-section">
-    <div class="year-header">About</div>
-    <div class="entry">
-      <div class="entry-date">Book Censorship in Contemporary Russia</div>
-      <p>This project aims to document the timeline of state pressure on the book industry in contemporary Russia. Pre-publication censorship involving official approval of manuscripts has not been openly practised in post-Soviet Russia. Nonetheless, the state has crafted other mechanisms to exert post-publication censorship. The most prominent among these is the adoption of repressive laws, such as <a href="https://www.hrw.org/news/2023/11/30/russia-supreme-court-bans-lgbt-movement-extremist">the anti-LGBT legislation</a> or the law prohibiting the dissemination of "false information about the conduct of the USSR during World War II," both of which can be applied to books and publishers. Although the use of these mechanisms remained relatively mild until recently, this appears to have changed significantly beginning in 2025.
-      </p>
-    </div>
-    <div class="entry">
-      <div class="entry-date">What Counts as Book Censorship?</div>
-      <p>Russia has employed a range of strategies to silence dissenting voices in the public sphere, from assigning <a href = "https://www.hrw.org/news/2022/12/01/russia-new-restrictions-foreign-agents">a foreign agent status</a> to jailing opposition figures and journalists. However, this study will specifically focus on efforts to control the <em>content</em> and <em>circulation</em> of books. Therefore, persecution of writers for statements made outside their written works, such as the arrest in absentia of the writer Boris Akunin for publicly condemning the war in Ukraine, will not be included here.
-      </p>
-    </div>
-    <div class="entry">
-      <div class="entry-date">How Does it Work?</div>
-      <p>The website records instances of book censorship and state pressure on the book industry in Russia in reverse chronological order. Each entry includes the date of an incident, provides a brief description of what happened, and cites media sources or, more rarely, word of mouth. All instances are classified into three major groups: those involving books, booksellers, and publishers. Cross-references between entries help follow the development of events.</p> 
-      <p>The names of publishers and bookstores are transliterated and, when meaningful, translations are reported in parentheses. Titles of books originally published in other languages are given in English, unless no English translation exists.
-      </p>
-      <p>If you would like to suggest an update or report an event, please reach out to <a href="mailto:orwell-in-moscow@proton.me">orwell-in-moscow@proton.me</a>.</p>      
-    </div>
-    <div class="entry">
-      <div class="entry-date">Further Links</div>
-      <p>In recent years, multiple initiatives have been launched to study literary censorship and support the freedom of expression in Russia and beyond. Below are some of these initiatives.</p> 
-      <p><a href="https://tamizdatproject.org/about/">Tamizdat Project</a></p>
-      <p><a href="https://freedomletters.org/">Freedom Letters </a></p>
-      <p><a href="https://www.straightforward.foundation/">StraightForward Foundation</a></p>
-      </div>
   </div>
-</div>
 
-  <script>
-    let entries = [];
-    let currentCategory = 'full timeline';
+ <script>
+let entries = [];
+let currentCategory = 'full timeline';
+let currentSubCategory = null;
 
-    fetch('entries.json')
-      .then(response => response.json())
-      .then(data => {
-        entries = data.filter(entry => entry.public === 1);
-        entries.sort((a, b) => new Date(b.date_parsed) - new Date(a.date_parsed));
-        const types = Array.from(new Set(entries.map(e => e.type)));
-        renderCategoryButtons(['full timeline', ...types, 'about']);
-        displayEntries(currentCategory);
+// Load entries from JSON
+fetch('entries.json')
+  .then(response => response.json())
+  .then(data => {
+    entries = data.filter(entry => entry.public === 1);
+    entries.sort((a, b) => new Date(b.date_parsed) - new Date(a.date_parsed));
 
-        document.getElementById('about-section').style.display = 'none';
-      })
-      .catch(error => {
-        document.getElementById('entries').textContent = 'Failed to load entries.';
-        console.error(error);
-      });
+    // Extract unique types from the data
+    const types = Array.from(new Set(entries.map(e => e.type)));
 
-      function renderCategoryButtons(categories) {
-        const container = document.getElementById('category-buttons');
-        container.innerHTML = '';
-        
-        categories.forEach(cat => {
-          const btn = document.createElement('button');
-          btn.textContent = cat;
-      
-          btn.onclick = () => {
-            currentCategory = cat;
-      
-            // Toggle visibility based on whether "about" is selected
-            if (cat === 'about') {
-              document.getElementById('entries').style.display = 'none';
-              document.getElementById('about-section').style.display = 'flex';
-            } else {
-              document.getElementById('about-section').style.display = 'none';
-              document.getElementById('entries').style.display = 'block';
-              displayEntries(cat);
-            }
-      
-            // Update active button styles
-            document.querySelectorAll('#category-buttons button').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-          };
-      
-          if (cat === currentCategory) {
-            btn.classList.add('active');
-          }
-      
-          container.appendChild(btn);
-        });
-      }
-
-    function monthName(dateObj) {
-      return dateObj.toLocaleString('en-US', { month: 'long' });
+    // Only show category buttons if on Full Timeline page
+    const subContainer = document.getElementById('category-buttons');
+    if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+      subContainer.style.display = 'flex';
+      renderCategoryButtons(types); // render dynamically from JSON types
     }
 
-    function displayEntries(category) {
+    // Display all entries initially (full timeline)
+    displayEntries('full timeline');
+  })
+  .catch(error => {
+    document.getElementById('entries').textContent = 'Failed to load entries.';
+    console.error(error);
+  });
+
+
+// Render secondary category buttons (sub-categories)
+function renderCategoryButtons(subCategories) {
+  const container = document.getElementById('category-buttons');
+  container.innerHTML = '';
+  container.style.display = 'flex'; // ensure visible
+
+  subCategories.forEach(sub => {
+    const btn = document.createElement('button');
+    btn.textContent = sub;
+
+    btn.onclick = () => {
+      currentSubCategory = sub;
+      displayEntries(currentCategory, currentSubCategory);
+
+      // Highlight active sub-button
+      document.querySelectorAll('#category-buttons button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    };
+
+    container.appendChild(btn);
+  });
+}
+
+// Display entries filtered by category and optionally sub-category
+function displayEntries(category, subCategory = null) {
   const container = document.getElementById('entries');
   container.innerHTML = '';
 
-  const filtered = category === 'full timeline'
+  let filtered = category === 'full timeline'
     ? entries
     : entries.filter(entry => entry.type === category);
 
-  // --- GROUP ENTRIES BY YEAR ---
+  if (subCategory) {
+    filtered = filtered.filter(entry => entry.type.toLowerCase() === subCategory.toLowerCase());
+  }
+
+  // Group by year
   const byYear = {};
   filtered.forEach(entry => {
-    const d = new Date(entry.date_parsed);
-    const year = d.getFullYear();
+    const year = new Date(entry.date_parsed).getFullYear();
     if (!byYear[year]) byYear[year] = [];
     byYear[year].push(entry);
   });
@@ -136,13 +115,10 @@
 
     // If ≥20 entries → group by month
     const shouldGroupByMonth = yearEntries.length >= 20;
-
     if (shouldGroupByMonth) {
-      // --- GROUP YEAR ENTRIES BY MONTH ---
       const byMonth = {};
       yearEntries.forEach(entry => {
-        const d = new Date(entry.date_parsed);
-        const month = d.getMonth(); // 0–11
+        const month = new Date(entry.date_parsed).getMonth();
         if (!byMonth[month]) byMonth[month] = [];
         byMonth[month].push(entry);
       });
@@ -152,35 +128,36 @@
         .sort((a, b) => b - a);
 
       sortedMonths.forEach(month => {
-        // MONTH HEADER
         const monthHeader = document.createElement('div');
         monthHeader.className = 'month-header';
         monthHeader.textContent = monthName(new Date(year, month, 1));
         container.appendChild(monthHeader);
 
         byMonth[month].forEach(entry => {
-          container.appendChild(buildEntry(entry));
+          container.appendChild(buildEntry(entry, category === 'full timeline'));
         });
       });
 
     } else {
-      // Otherwise → flat entries under the year
       yearEntries.forEach(entry => {
-        container.appendChild(buildEntry(entry));
+        container.appendChild(buildEntry(entry, category === 'full timeline'));
       });
     }
   });
 }
 
+// Helper: month name
+function monthName(dateObj) {
+  return dateObj.toLocaleString('en-US', { month: 'long' });
+}
 
-
-// Helper for building an entry DOM element
-function buildEntry(entry) {
+// Build entry DOM
+function buildEntry(entry, showType = false) {
   const entryDiv = document.createElement('div');
   entryDiv.className = 'entry';
   entryDiv.id = entry.id;
 
-  if (currentCategory === 'full timeline') {
+  if (showType) {
     const typeElem = document.createElement('div');
     typeElem.classList.add('entry-type');
     typeElem.textContent = entry.type;
@@ -225,6 +202,7 @@ function buildEntry(entry) {
     entryDiv.appendChild(sourceContainer);
   }
 
+  // LOCATION
   if (entry.location && entry.location.trim() !== '') {
     const locationElem = document.createElement('div');
     locationElem.classList.add('entry-location');
@@ -240,9 +218,10 @@ function buildEntry(entry) {
 
   return entryDiv;
 }
-  </script>
+</script>
 
-<footer class="page-footer">© 2025. </footer>
+
+<footer class="page-footer">© 2025</footer>
 </body>
 </html>
 
