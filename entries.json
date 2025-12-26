@@ -1,5 +1,18 @@
 [
   {
+    "id": "18-12-2025-booksellers-2",
+    "date": "December 18, 2025",
+    "date_parsed": "2025-12-18",
+    "public": 1,
+    "type": "booksellers",
+    "description": "Litres, the largest e-book and audiobook platform in Russia, deleted almost 4,500 books over concerns that they might violate the law prohibiting drug propaganda. The removed books accounted for around 0.5% of the platform’s entire catalogue.",
+    "location": "",
+    "source": "url",
+    "url1": "https://t.me/agentstvonews/13181",
+    "url2": "",
+    "url3": ""
+  },
+  {
     "id": "18-12-2025-booksellers",
     "date": "December 18, 2025",
     "date_parsed": "2025-12-18",
