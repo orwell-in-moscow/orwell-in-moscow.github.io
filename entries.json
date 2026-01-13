@@ -1,5 +1,18 @@
 [
   {
+    "id": "26-12-2025-booksellers",
+    "date": "December 26, 2025",
+    "date_parsed": "2025-12-26",
+    "public": 1,
+    "type": "booksellers",
+    "description": "Chitay-Gorod, the country's largest bookstore chain, was fined 800,000 rubles (around $10,000) for selling books that allegedly “call for the dismantling of the traditional social value system and its replacement with sexual anarchism” in violation of Russia’s law against so-called “LGBT propaganda.” The fine followed a complaint filed by residents in Chita, Zabaykalsky Krai. Although the titles of the books in question have not been disclosed, one of them may have been <em>The Left Hand of Darkness</em> by Ursula K. Le Guin, which had <a href = \"#18-12-2025-booksellers\"> previously been reported</a> as having been targeted by the police during inspections of Chitay-Gorod stores in Chita. \n",
+    "location": "Chita",
+    "source": "url",
+    "url1": "https://zona.media/news/2026/01/10/anarchism",
+    "url2": "https://centr--cht.sudrf.ru/modules.php?name=sud_delo&srv_num=2&name_op=case&case_id=451292811&case_uid=37f00663-cbb0-4d47-9326-3c06c42de659&delo_id=1500001",
+    "url3": ""
+  },
+  {
     "id": "18-12-2025-booksellers-2",
     "date": "December 18, 2025",
     "date_parsed": "2025-12-18",
